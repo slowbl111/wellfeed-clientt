@@ -1,5 +1,6 @@
 package dk.wellfeed.module.impl;
 
+import dk.wellfeed.module.Category;
 import dk.wellfeed.module.Module;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -7,7 +8,7 @@ import net.minecraft.entity.effect.StatusEffects;
 
 public class Fullbright extends Module {
     public Fullbright() {
-        super("Fullbright", "Se i mørke (klient-side nattesyn).");
+        super("Fullbright", "Se i mørke (klient-side nattesyn).", Category.RENDER);
     }
 
     @Override

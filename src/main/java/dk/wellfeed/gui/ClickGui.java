@@ -1,10 +1,12 @@
 package dk.wellfeed.gui;
 
 import dk.wellfeed.WellfeedClient;
+import dk.wellfeed.module.Category;
 import dk.wellfeed.module.Module;
 import dk.wellfeed.module.ModuleManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
@@ -15,7 +17,8 @@ public class ClickGui extends Screen {
     private static final int BTN_W = 110;
     private static final int BTN_H = 20;
     private static final int GAP = 6;
-    private static final int COLUMNS = 3;
+
+    private int panelX, panelY, panelW, panelH, startX;
 
     public ClickGui() {
         super(Text.literal(WellfeedClient.NAME));
@@ -23,24 +26,38 @@ public class ClickGui extends Screen {
 
     @Override
     protected void init() {
-        List<Module> modules = ModuleManager.getModules();
-        int gridW = COLUMNS * BTN_W + (COLUMNS - 1) * GAP;
-        int startX = (this.width - gridW) / 2;
-        int startY = this.height / 2 - 40;
+        Category[] cats = Category.values();
+        int cols = cats.length;
 
-        for (int i = 0; i < modules.size(); i++) {
-            Module m = modules.get(i);
-            int x = startX + (i % COLUMNS) * (BTN_W + GAP);
-            int y = startY + (i / COLUMNS) * (BTN_H + GAP);
+        int maxRows = 1;
+        for (Category c : cats) {
+            maxRows = Math.max(maxRows, ModuleManager.byCategory(c).size());
+        }
 
-            ButtonWidget btn = ButtonWidget.builder(label(m), b -> {
-                        m.toggle();
-                        b.setMessage(label(m));
-                    })
-                    .dimensions(x, y, BTN_W, BTN_H)
-                    .tooltip(net.minecraft.client.gui.tooltip.Tooltip.of(Text.literal(m.getDescription())))
-                    .build();
-            this.addDrawableChild(btn);
+        int gridW = cols * BTN_W + (cols - 1) * GAP;
+        panelW = gridW + 40;
+        panelH = 70 + maxRows * (BTN_H + GAP) + 24;
+        panelX = (this.width - panelW) / 2;
+        panelY = (this.height - panelH) / 2;
+        startX = panelX + 20;
+        int startY = panelY + 56;
+
+        for (int c = 0; c < cols; c++) {
+            List<Module> list = ModuleManager.byCategory(cats[c]);
+            int x = startX + c * (BTN_W + GAP);
+            for (int r = 0; r < list.size(); r++) {
+                Module m = list.get(r);
+                int y = startY + r * (BTN_H + GAP);
+
+                ButtonWidget btn = ButtonWidget.builder(label(m), b -> {
+                            m.toggle();
+                            b.setMessage(label(m));
+                        })
+                        .dimensions(x, y, BTN_W, BTN_H)
+                        .tooltip(Tooltip.of(Text.literal(m.getDescription())))
+                        .build();
+                this.addDrawableChild(btn);
+            }
         }
     }
 
@@ -50,12 +67,7 @@ public class ClickGui extends Screen {
 
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-        // Egen mørk baggrund + panel (ingen vanilla blur)
         context.fill(0, 0, this.width, this.height, 0xB0000000);
-        int panelW = COLUMNS * BTN_W + (COLUMNS - 1) * GAP + 40;
-        int panelX = (this.width - panelW) / 2;
-        int panelY = this.height / 2 - 80;
-        int panelH = 170;
         context.fill(panelX, panelY, panelX + panelW, panelY + panelH, 0xE0101018);
         context.fill(panelX, panelY, panelX + panelW, panelY + 3, ACCENT);
     }
@@ -63,11 +75,20 @@ public class ClickGui extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
+
         context.drawCenteredTextWithShadow(this.textRenderer, this.title,
-                this.width / 2, this.height / 2 - 65, ACCENT);
+                this.width / 2, panelY + 14, ACCENT);
+
+        Category[] cats = Category.values();
+        for (int c = 0; c < cats.length; c++) {
+            int cx = startX + c * (BTN_W + GAP) + BTN_W / 2;
+            context.drawCenteredTextWithShadow(this.textRenderer,
+                    Text.literal(cats[c].getLabel()), cx, panelY + 38, 0xFFFFFFFF);
+        }
+
         context.drawCenteredTextWithShadow(this.textRenderer,
                 Text.literal("Tryk ESC for at lukke"),
-                this.width / 2, this.height / 2 + 70, 0xFF888888);
+                this.width / 2, panelY + panelH - 14, 0xFF888888);
     }
 
     @Override

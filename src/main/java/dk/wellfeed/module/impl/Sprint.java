@@ -1,11 +1,12 @@
 package dk.wellfeed.module.impl;
 
+import dk.wellfeed.module.Category;
 import dk.wellfeed.module.Module;
 import net.minecraft.client.MinecraftClient;
 
 public class Sprint extends Module {
     public Sprint() {
-        super("Sprint", "Sprinter automatisk når du går fremad.");
+        super("Sprint", "Sprinter automatisk når du går fremad.", Category.MOVEMENT);
     }
 
     @Override

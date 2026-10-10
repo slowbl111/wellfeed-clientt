@@ -1,5 +1,6 @@
 package dk.wellfeed.module.impl;
 
+import dk.wellfeed.module.Category;
 import dk.wellfeed.module.Module;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -8,7 +9,7 @@ public class Fly extends Module {
     private static final double SPEED = 0.5; // blokke pr. tick
 
     public Fly() {
-        super("Fly", "Flyv frit. Space = op, Shift = ned.");
+        super("Fly", "Flyv frit. Space = op, Shift = ned.", Category.MOVEMENT);
     }
 
     @Override
