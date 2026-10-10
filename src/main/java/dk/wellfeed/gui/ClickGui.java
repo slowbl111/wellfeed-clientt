@@ -1,25 +1,30 @@
 package dk.wellfeed.gui;
 
+import dk.wellfeed.Config;
 import dk.wellfeed.WellfeedClient;
 import dk.wellfeed.module.Category;
 import dk.wellfeed.module.Module;
 import dk.wellfeed.module.ModuleManager;
+import dk.wellfeed.module.NumberSetting;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClickGui extends Screen {
-    private static final int PANEL_W = 128;
+    private static final int PANEL_W = 160;
     private static final int HEADER_H = 22;
     private static final int ROW_H = 19;
     private static final int PAD = 4;
     private static final int GAP = 8;
 
     private final List<ModuleButton> buttons = new ArrayList<>();
+    private final boolean[] prevKeys = new boolean[GLFW.GLFW_KEY_LAST + 1];
     private int[] panelX;
     private int[] panelH;
     private int top;
@@ -66,6 +71,48 @@ public class ClickGui extends Screen {
                         .build());
             }
         }
+
+        // Nulstil tast-tilstand så en tast der allerede holdes nede ikke tæller som nyt tryk
+        long handle = MinecraftClient.getInstance().getWindow().getHandle();
+        for (int k = GLFW.GLFW_KEY_SPACE; k <= GLFW.GLFW_KEY_LAST; k++) {
+            prevKeys[k] = GLFW.glfwGetKey(handle, k) == GLFW.GLFW_PRESS;
+        }
+    }
+
+    // Hold musen over et modul og tryk en tast: binder den. DEL/BKSP rydder. Pile justerer indstilling.
+    private void pollKeys(int mouseX, int mouseY) {
+        long handle = MinecraftClient.getInstance().getWindow().getHandle();
+
+        ModuleButton hovered = null;
+        for (ModuleButton b : buttons) {
+            if (b.isOver(mouseX, mouseY)) { hovered = b; break; }
+        }
+
+        for (int k = GLFW.GLFW_KEY_SPACE; k <= GLFW.GLFW_KEY_LAST; k++) {
+            boolean down = GLFW.glfwGetKey(handle, k) == GLFW.GLFW_PRESS;
+            if (down && !prevKeys[k] && hovered != null) {
+                handleKey(hovered.getModule(), k);
+            }
+            prevKeys[k] = down;
+        }
+    }
+
+    private void handleKey(Module m, int key) {
+        // Taster der bruges af menuen selv kan ikke bindes
+        if (key == GLFW.GLFW_KEY_ESCAPE || key == WellfeedClient.MENU_KEY || key == WellfeedClient.PANIC_KEY) return;
+        if (key == GLFW.GLFW_KEY_SPACE || key == GLFW.GLFW_KEY_ENTER
+                || key == GLFW.GLFW_KEY_KP_ENTER || key == GLFW.GLFW_KEY_TAB) return;
+
+        if (key == GLFW.GLFW_KEY_DELETE || key == GLFW.GLFW_KEY_BACKSPACE) {
+            m.setKey(-1);
+            return;
+        }
+
+        NumberSetting s = m.getSetting();
+        if (s != null && key == GLFW.GLFW_KEY_RIGHT) { s.increase(); Config.save(); return; }
+        if (s != null && key == GLFW.GLFW_KEY_LEFT)  { s.decrease(); Config.save(); return; }
+
+        m.setKey(key);
     }
 
     @Override
@@ -111,8 +158,8 @@ public class ClickGui extends Screen {
                     panelX[c] + PANEL_W - cw - PAD - 3, top + 8, Theme.TEXT_DIM);
         }
 
-        // Beskrivelse af modulet musen peger på
-        String hint = "Hold musen over et modul for info  |  ESC lukker";
+        // Hjælpetekst / beskrivelse af modulet musen peger på
+        String hint = "Hold musen over et modul: tryk en tast for at binde  |  DEL rydder  |  pile justerer";
         for (ModuleButton b : buttons) {
             if (b.isOver(mouseX, mouseY)) {
                 hint = b.getModule().getName() + ": " + b.getModule().getDescription();
@@ -121,6 +168,13 @@ public class ClickGui extends Screen {
         }
         context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(hint),
                 this.width / 2, top + maxH + 10, Theme.TEXT_DIM);
+
+        String footer = "Panic: " + KeyNames.of(WellfeedClient.PANIC_KEY)
+                + " slukker alle moduler  |  ESC lukker";
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(footer),
+                this.width / 2, top + maxH + 22, 0xFF666677);
+
+        pollKeys(mouseX, mouseY);
     }
 
     @Override

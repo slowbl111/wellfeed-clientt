@@ -42,25 +42,35 @@ public class HudOverlay {
         context.drawTextWithShadow(tr, info, 9, 22, Theme.TEXT_DIM);
     }
 
+    private static int rowWidth(TextRenderer tr, Module m) {
+        int w = tr.getWidth(m.getName());
+        if (m.getSetting() != null) w += tr.getWidth(" " + m.getSetting().display());
+        return w;
+    }
+
     private static void drawModuleList(DrawContext context, TextRenderer tr, Hud hud) {
         List<Module> active = new ArrayList<>();
         for (Module m : ModuleManager.getModules()) {
             if (m.isEnabled() && m != hud) active.add(m);
         }
-        // Længste navn øverst
-        active.sort((a, b) -> tr.getWidth(b.getName()) - tr.getWidth(a.getName()));
+        // Bredeste række øverst
+        active.sort((a, b) -> rowWidth(tr, b) - rowWidth(tr, a));
 
         int screenW = context.getScaledWindowWidth();
         int y = 4;
         int i = 0;
         for (Module m : active) {
-            int w = tr.getWidth(m.getName());
+            int w = rowWidth(tr, m);
             int x = screenW - w - 9;
             int color = Theme.accent(i * 0.5);
 
             context.fill(x - 3, y, screenW, y + 12, Theme.HUD_BG);
             context.fill(screenW - 2, y, screenW, y + 12, color);
             context.drawTextWithShadow(tr, m.getName(), x, y + 2, color);
+            if (m.getSetting() != null) {
+                context.drawTextWithShadow(tr, " " + m.getSetting().display(),
+                        x + tr.getWidth(m.getName()), y + 2, Theme.TEXT_DIM);
+            }
 
             y += 12;
             i++;

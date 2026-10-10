@@ -1,5 +1,6 @@
 package dk.wellfeed.module;
 
+import dk.wellfeed.Config;
 import net.minecraft.client.MinecraftClient;
 
 public abstract class Module {
@@ -7,6 +8,8 @@ public abstract class Module {
     private final String description;
     private final Category category;
     private boolean enabled;
+    private int key = -1; // -1 = ingen keybind
+    private NumberSetting setting;
 
     protected Module(String name, String description, Category category) {
         this.name = name;
@@ -19,6 +22,23 @@ public abstract class Module {
     public Category getCategory() { return category; }
     public boolean isEnabled() { return enabled; }
 
+    public int getKey() { return key; }
+
+    public void setKey(int key) {
+        this.key = key;
+        Config.save();
+    }
+
+    // Kun brugt af Config når den indlæser (ingen gem undervejs).
+    public void setKeyQuiet(int key) { this.key = key; }
+
+    public NumberSetting getSetting() { return setting; }
+
+    protected NumberSetting addSetting(NumberSetting s) {
+        this.setting = s;
+        return s;
+    }
+
     public void toggle() {
         setEnabled(!enabled);
     }
@@ -28,6 +48,7 @@ public abstract class Module {
         this.enabled = value;
         MinecraftClient mc = MinecraftClient.getInstance();
         if (value) onEnable(mc); else onDisable(mc);
+        Config.save();
     }
 
     protected void onEnable(MinecraftClient mc) {}

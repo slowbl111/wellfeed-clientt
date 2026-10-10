@@ -2,13 +2,14 @@ package dk.wellfeed.module.impl;
 
 import dk.wellfeed.module.Category;
 import dk.wellfeed.module.Module;
+import dk.wellfeed.module.NumberSetting;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerInventory;
 
 public class AutoEat extends Module {
-    private static final int EAT_BELOW = 14; // spis når sult er 14 eller lavere
+    private final NumberSetting eatBelow = addSetting(new NumberSetting("Hunger", 14, 4, 19, 1)); // spis når sult er under/lig med
 
     private boolean eating = false;
     private int previousSlot = -1;
@@ -36,7 +37,7 @@ public class AutoEat extends Module {
             return;
         }
 
-        if (mc.currentScreen != null || food > EAT_BELOW) return;
+        if (mc.currentScreen != null || food > (int) eatBelow.get()) return;
 
         for (int i = 0; i < 9; i++) {
             if (inv.getStack(i).contains(DataComponentTypes.FOOD)) {

@@ -2,11 +2,12 @@ package dk.wellfeed.module.impl;
 
 import dk.wellfeed.module.Category;
 import dk.wellfeed.module.Module;
+import dk.wellfeed.module.NumberSetting;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 
 public class AntiAfk extends Module {
-    private static final int INTERVAL_TICKS = 400; // ca. hvert 20. sekund
+    private final NumberSetting seconds = addSetting(new NumberSetting("Seconds", 20, 5, 120, 5));
 
     private int timer = 0;
     private boolean releasePending = false;
@@ -27,7 +28,7 @@ public class AntiAfk extends Module {
         }
 
         timer++;
-        if (timer < INTERVAL_TICKS) return;
+        if (timer < (int) (seconds.get() * 20)) return;
         timer = 0;
 
         if (mc.currentScreen != null) return;

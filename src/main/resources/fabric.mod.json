@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "wellfeedclient",
-  "version": "1.0.0",
+  "version": "5.0.0",
   "name": "Wellfeed Client",
   "description": "Wellfeed Client - utility client med klik-menu.",
   "authors": ["Dig"],

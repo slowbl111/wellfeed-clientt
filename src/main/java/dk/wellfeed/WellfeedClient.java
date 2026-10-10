@@ -13,10 +13,14 @@ import org.lwjgl.glfw.GLFW;
 
 public class WellfeedClient implements ClientModInitializer {
     public static final String NAME = "Wellfeed Client";
-    // Tast der åbner menuen. Skift f.eks. til GLFW.GLFW_KEY_INSERT hvis du vil.
-    public static final int MENU_KEY = GLFW.GLFW_KEY_RIGHT_SHIFT;
 
-    private boolean keyWasDown = false;
+    // Tast der åbner menuen
+    public static final int MENU_KEY = GLFW.GLFW_KEY_RIGHT_SHIFT;
+    // Panic: slukker alle moduler med det samme
+    public static final int PANIC_KEY = GLFW.GLFW_KEY_END;
+
+    private boolean menuWasDown = false;
+    private boolean panicWasDown = false;
 
     @Override
     public void onInitializeClient() {
@@ -32,13 +36,22 @@ public class WellfeedClient implements ClientModInitializer {
 
     private void onTick(MinecraftClient mc) {
         if (mc.getWindow() == null) return;
+        long handle = mc.getWindow().getHandle();
 
-        boolean down = GLFW.glfwGetKey(mc.getWindow().getHandle(), MENU_KEY) == GLFW.GLFW_PRESS;
-        if (down && !keyWasDown && mc.currentScreen == null && mc.player != null) {
+        boolean menuDown = GLFW.glfwGetKey(handle, MENU_KEY) == GLFW.GLFW_PRESS;
+        if (menuDown && !menuWasDown && mc.currentScreen == null && mc.player != null) {
             mc.setScreen(new ClickGui());
         }
-        keyWasDown = down;
+        menuWasDown = menuDown;
 
+        boolean panicDown = GLFW.glfwGetKey(handle, PANIC_KEY) == GLFW.GLFW_PRESS;
+        if (panicDown && !panicWasDown) {
+            ModuleManager.disableAll();
+            if (mc.currentScreen instanceof ClickGui) mc.setScreen(null);
+        }
+        panicWasDown = panicDown;
+
+        ModuleManager.pollBinds(mc, mc.currentScreen == null && mc.player != null);
         ModuleManager.tick(mc);
     }
 }

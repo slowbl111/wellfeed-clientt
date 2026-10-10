@@ -1,6 +1,7 @@
 package dk.wellfeed.gui;
 
 import dk.wellfeed.module.Module;
+import dk.wellfeed.module.NumberSetting;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -41,12 +42,27 @@ public class ModuleButton {
         context.drawTextWithShadow(tr, module.getName(), x + 7, y + (h - 8) / 2,
                 on ? Theme.TEXT : Theme.TEXT_DIM);
 
-        // Lille til/fra-kontakt i højre side
+        // Til/fra-kontakt yderst til højre
         int pw = 18, ph = 8;
         int px = x + w - pw - 5;
         int py = y + (h - ph) / 2;
         context.fill(px, py, px + pw, py + ph, on ? Theme.accent(1.5) : 0xFF3A3A4C);
         int kx = on ? px + pw - ph + 1 : px + 1;
         context.fill(kx, py + 1, kx + ph - 2, py + ph - 1, 0xFFFFFFFF);
+
+        // Indstilling og keybind lige til venstre for kontakten
+        StringBuilder info = new StringBuilder();
+        NumberSetting s = module.getSetting();
+        if (s != null) info.append(s.display());
+        if (module.getKey() != -1) {
+            if (info.length() > 0) info.append(' ');
+            info.append('[').append(KeyNames.of(module.getKey())).append(']');
+        }
+        if (info.length() > 0) {
+            String text = info.toString();
+            int tw = tr.getWidth(text);
+            context.drawTextWithShadow(tr, text, px - tw - 5, y + (h - 8) / 2,
+                    hover ? Theme.TEXT : Theme.TEXT_DIM);
+        }
     }
 }
