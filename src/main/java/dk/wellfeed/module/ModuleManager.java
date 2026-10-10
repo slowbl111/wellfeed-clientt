@@ -15,12 +15,15 @@ public class ModuleManager {
         MODULES.add(new Fly());
         MODULES.add(new Sprint());
         MODULES.add(new ElytraGlide());
+        MODULES.add(new AutoWalk());
         // Misc
         MODULES.add(new AutoEat());
         MODULES.add(new AutoTool());
         MODULES.add(new AutoFirework());
         MODULES.add(new AutoMine());
         MODULES.add(new AutoLog());
+        MODULES.add(new AutoRespawn());
+        MODULES.add(new AntiAfk());
         // Render
         MODULES.add(new Hud());
         MODULES.add(new Fullbright());

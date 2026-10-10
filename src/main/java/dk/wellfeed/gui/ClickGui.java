@@ -6,19 +6,23 @@ import dk.wellfeed.module.Module;
 import dk.wellfeed.module.ModuleManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClickGui extends Screen {
-    private static final int ACCENT = 0xFF7B5CFF;
-    private static final int BTN_W = 110;
-    private static final int BTN_H = 20;
-    private static final int GAP = 6;
+    private static final int PANEL_W = 128;
+    private static final int HEADER_H = 22;
+    private static final int ROW_H = 19;
+    private static final int PAD = 4;
+    private static final int GAP = 8;
 
-    private int panelX, panelY, panelW, panelH, startX;
+    private final List<ModuleButton> buttons = new ArrayList<>();
+    private int[] panelX;
+    private int[] panelH;
+    private int top;
+    private int maxH;
 
     public ClickGui() {
         super(Text.literal(WellfeedClient.NAME));
@@ -26,69 +30,86 @@ public class ClickGui extends Screen {
 
     @Override
     protected void init() {
+        buttons.clear();
         Category[] cats = Category.values();
-        int cols = cats.length;
+        int n = cats.length;
 
         int maxRows = 1;
         for (Category c : cats) {
             maxRows = Math.max(maxRows, ModuleManager.byCategory(c).size());
         }
 
-        int gridW = cols * BTN_W + (cols - 1) * GAP;
-        panelW = gridW + 40;
-        panelH = 70 + maxRows * (BTN_H + GAP) + 24;
-        panelX = (this.width - panelW) / 2;
-        panelY = (this.height - panelH) / 2;
-        startX = panelX + 20;
-        int startY = panelY + 56;
+        int totalW = n * PANEL_W + (n - 1) * GAP;
+        int startX = (this.width - totalW) / 2;
+        maxH = HEADER_H + PAD + maxRows * ROW_H + PAD;
+        top = Math.max(24, (this.height - maxH) / 2);
 
-        for (int c = 0; c < cols; c++) {
+        panelX = new int[n];
+        panelH = new int[n];
+
+        for (int c = 0; c < n; c++) {
             List<Module> list = ModuleManager.byCategory(cats[c]);
-            int x = startX + c * (BTN_W + GAP);
-            for (int r = 0; r < list.size(); r++) {
-                Module m = list.get(r);
-                int y = startY + r * (BTN_H + GAP);
+            panelX[c] = startX + c * (PANEL_W + GAP);
+            panelH[c] = HEADER_H + PAD + list.size() * ROW_H + PAD;
 
-                ButtonWidget btn = ButtonWidget.builder(label(m), b -> {
-                            m.toggle();
-                            b.setMessage(label(m));
-                        })
-                        .dimensions(x, y, BTN_W, BTN_H)
-                        .tooltip(Tooltip.of(Text.literal(m.getDescription())))
-                        .build();
+            for (int r = 0; r < list.size(); r++) {
+                int bx = panelX[c] + PAD;
+                int by = top + HEADER_H + PAD + r * ROW_H;
+                ModuleButton btn = new ModuleButton(bx, by, PANEL_W - PAD * 2, ROW_H - 2, list.get(r));
+                buttons.add(btn);
                 this.addDrawableChild(btn);
             }
         }
     }
 
-    private Text label(Module m) {
-        return Text.literal(m.getName() + ": " + (m.isEnabled() ? "ON" : "OFF"));
-    }
-
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         context.fill(0, 0, this.width, this.height, 0xB0000000);
-        context.fill(panelX, panelY, panelX + panelW, panelY + panelH, 0xE0101018);
-        context.fill(panelX, panelY, panelX + panelW, panelY + 3, ACCENT);
+
+        for (int c = 0; c < panelX.length; c++) {
+            int x = panelX[c];
+            context.fill(x, top, x + PANEL_W, top + panelH[c], Theme.PANEL);
+            context.fill(x, top, x + PANEL_W, top + HEADER_H, Theme.PANEL_HEADER);
+            context.fill(x, top, x + PANEL_W, top + 2, Theme.accent(c * 0.7));
+            context.fill(x, top + HEADER_H - 1, x + PANEL_W, top + HEADER_H, 0xFF2A2A3C);
+        }
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
-        context.drawCenteredTextWithShadow(this.textRenderer, this.title,
-                this.width / 2, panelY + 14, ACCENT);
+        // Titel
+        context.drawCenteredTextWithShadow(this.textRenderer,
+                Text.literal(WellfeedClient.NAME.toUpperCase()),
+                this.width / 2, top - 16, Theme.accent(0));
 
+        // Kategori-overskrifter med antal aktive moduler
         Category[] cats = Category.values();
         for (int c = 0; c < cats.length; c++) {
-            int cx = startX + c * (BTN_W + GAP) + BTN_W / 2;
-            context.drawCenteredTextWithShadow(this.textRenderer,
-                    Text.literal(cats[c].getLabel()), cx, panelY + 38, 0xFFFFFFFF);
+            List<Module> list = ModuleManager.byCategory(cats[c]);
+            int active = 0;
+            for (Module m : list) if (m.isEnabled()) active++;
+
+            context.drawTextWithShadow(this.textRenderer, cats[c].getLabel(),
+                    panelX[c] + PAD + 3, top + 8, Theme.TEXT);
+
+            String count = active + "/" + list.size();
+            int cw = this.textRenderer.getWidth(count);
+            context.drawTextWithShadow(this.textRenderer, count,
+                    panelX[c] + PANEL_W - cw - PAD - 3, top + 8, Theme.TEXT_DIM);
         }
 
-        context.drawCenteredTextWithShadow(this.textRenderer,
-                Text.literal("Tryk ESC for at lukke"),
-                this.width / 2, panelY + panelH - 14, 0xFF888888);
+        // Beskrivelse af modulet musen peger på
+        String hint = "Hold musen over et modul for info  |  ESC lukker";
+        for (ModuleButton b : buttons) {
+            if (b.isHovered()) {
+                hint = b.getModule().getName() + ": " + b.getModule().getDescription();
+                break;
+            }
+        }
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(hint),
+                this.width / 2, top + maxH + 10, Theme.TEXT_DIM);
     }
 
     @Override
