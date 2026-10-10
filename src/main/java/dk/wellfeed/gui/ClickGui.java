@@ -6,6 +6,7 @@ import dk.wellfeed.module.Module;
 import dk.wellfeed.module.ModuleManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -55,9 +56,14 @@ public class ClickGui extends Screen {
             for (int r = 0; r < list.size(); r++) {
                 int bx = panelX[c] + PAD;
                 int by = top + HEADER_H + PAD + r * ROW_H;
-                ModuleButton btn = new ModuleButton(bx, by, PANEL_W - PAD * 2, ROW_H - 2, list.get(r));
-                buttons.add(btn);
-                this.addDrawableChild(btn);
+                Module m = list.get(r);
+                int bw = PANEL_W - PAD * 2;
+                int bh = ROW_H - 2;
+                buttons.add(new ModuleButton(bx, by, bw, bh, m));
+                // Almindelig knap med tom tekst håndterer klikket; ModuleButton tegner udseendet ovenpå.
+                this.addDrawableChild(ButtonWidget.builder(Text.literal(""), b -> m.toggle())
+                        .dimensions(bx, by, bw, bh)
+                        .build());
             }
         }
     }
@@ -78,6 +84,11 @@ public class ClickGui extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
+
+        // Tegn modul-rækkerne oven på de tomme knapper
+        for (ModuleButton b : buttons) {
+            b.draw(context, mouseX, mouseY);
+        }
 
         // Titel
         context.drawCenteredTextWithShadow(this.textRenderer,
@@ -103,7 +114,7 @@ public class ClickGui extends Screen {
         // Beskrivelse af modulet musen peger på
         String hint = "Hold musen over et modul for info  |  ESC lukker";
         for (ModuleButton b : buttons) {
-            if (b.isHovered()) {
+            if (b.isOver(mouseX, mouseY)) {
                 hint = b.getModule().getName() + ": " + b.getModule().getDescription();
                 break;
             }

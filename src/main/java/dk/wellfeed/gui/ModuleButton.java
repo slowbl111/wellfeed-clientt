@@ -4,15 +4,18 @@ import dk.wellfeed.module.Module;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
 
-public class ModuleButton extends ButtonWidget {
+// Ren hjælpeklasse: tegner en modul-række. Selve klikket håndteres af en
+// almindelig knap i ClickGui, som ligger under og har tom tekst.
+public class ModuleButton {
     private final Module module;
+    private final int x, y, w, h;
 
-    public ModuleButton(int x, int y, int width, int height, Module module) {
-        super(x, y, width, height, Text.literal(module.getName()),
-                b -> module.toggle(), DEFAULT_NARRATION_SUPPLIER);
+    public ModuleButton(int x, int y, int w, int h, Module module) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
         this.module = module;
     }
 
@@ -20,12 +23,13 @@ public class ModuleButton extends ButtonWidget {
         return module;
     }
 
-    @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        boolean on = module.isEnabled();
-        boolean hover = this.isHovered();
+    public boolean isOver(int mouseX, int mouseY) {
+        return mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
+    }
 
-        int x = getX(), y = getY(), w = getWidth(), h = getHeight();
+    public void draw(DrawContext context, int mouseX, int mouseY) {
+        boolean on = module.isEnabled();
+        boolean hover = isOver(mouseX, mouseY);
 
         int bg = on ? 0xFF2B2346 : (hover ? 0xFF292938 : 0xFF1D1D2A);
         context.fill(x, y, x + w, y + h, bg);
