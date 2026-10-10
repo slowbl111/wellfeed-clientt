@@ -1,17 +1,18 @@
 {
   "schemaVersion": 1,
-  "id": "wellfeedclient",
-  "version": "5.0.0",
-  "name": "Wellfeed Client",
-  "description": "Wellfeed Client - utility client med klik-menu.",
-  "authors": ["Dig"],
+  "id": "wellfeed",
+  "version": "${version}",
+  "name": "Wellfeed",
+  "description": "A click-GUI utility menu with keybinds, per-module settings and automation helpers (AutoMine, AutoBuild, AutoFarm, AutoFish, AutoEat, AutoTool).",
+  "authors": ["Wellfeed contributors"],
   "license": "MIT",
+  "icon": "assets/wellfeed/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": ["dk.wellfeed.WellfeedClient"]
+    "client": ["com.wellfeed.WellfeedClient"]
   },
   "depends": {
-    "fabricloader": ">=0.16.0",
+    "fabricloader": ">=0.18.0",
     "minecraft": "~1.21.11",
     "java": ">=21",
     "fabric-api": "*"
