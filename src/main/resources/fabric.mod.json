@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "wellfeedclient",
+  "version": "1.0.0",
+  "name": "Wellfeed Client",
+  "description": "Wellfeed Client - utility client med klik-menu.",
+  "authors": ["Dig"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dk.wellfeed.WellfeedClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
