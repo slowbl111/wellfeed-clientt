@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "dev.wellfeed.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "CameraMixin",
+    "MinecraftClientMixin",
+    "SimpleOptionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
