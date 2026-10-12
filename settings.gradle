@@ -1,13 +1,9 @@
 pluginManagement {
-	repositories {
-		maven {
-			name = 'Fabric'
-			url = 'https://maven.fabricmc.net/'
-		}
-		mavenCentral()
-		gradlePluginPortal()
-	}
+    repositories {
+        maven { url = 'https://maven.fabricmc.net/' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
 }
 
-// Should match your modid
-rootProject.name = 'wellfeed-client'
+rootProject.name = 'wellfeed-esp'

@@ -4,5 +4,7 @@
   "key.wellfeed.esp": "Toggle ESP",
   "key.wellfeed.fly": "Toggle Fly",
   "key.wellfeed.fullbright": "Toggle Fullbright",
-  "key.wellfeed.autototem": "Toggle AutoTotem"
+  "key.wellfeed.autototem": "Toggle AutoTotem",
+  "key.wellfeed.freecam": "Toggle Freecam",
+  "key.wellfeed.cinematic": "Toggle Cinematic Camera"
 }

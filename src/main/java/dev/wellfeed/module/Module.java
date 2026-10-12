@@ -40,6 +40,9 @@ public abstract class Module {
     protected void onEnable() {}
     protected void onDisable() {}
 
+    /** Called at the START of every client tick (before input is handled) while enabled and in a world. */
+    public void onPreTick(MinecraftClient mc) {}
+
     /** Called every client tick while enabled and in a world. */
     public void onTick(MinecraftClient mc) {}
 

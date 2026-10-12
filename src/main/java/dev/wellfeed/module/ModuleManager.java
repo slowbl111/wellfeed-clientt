@@ -16,10 +16,24 @@ public final class ModuleManager {
         // Render
         MODULES.add(EspModule.INSTANCE);
         MODULES.add(FullbrightModule.INSTANCE);
+        MODULES.add(FreecamModule.INSTANCE);
+        MODULES.add(CinematicModule.INSTANCE);
         // Movement
         MODULES.add(FlyModule.INSTANCE);
         // Combat
         MODULES.add(AutoTotemModule.INSTANCE);
+    }
+
+    public static final String[] CATEGORIES = { "HUD", "Render", "Camera", "Movement", "Combat" };
+
+    public static String categoryOf(Module m) {
+        switch (m.name) {
+            case "Keystrokes": case "ArmorHUD": case "PotionHUD": return "HUD";
+            case "ESP": case "Fullbright": return "Render";
+            case "Freecam": case "Cinematic": return "Camera";
+            case "Fly": return "Movement";
+            default: return "Combat";
+        }
     }
 
     private ModuleManager() {}

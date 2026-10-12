@@ -2,6 +2,7 @@ package dev.wellfeed.modules;
 
 import dev.wellfeed.module.Module;
 import dev.wellfeed.module.Setting;
+import dev.wellfeed.util.CameraRig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 
@@ -22,6 +23,7 @@ public final class FlyModule extends Module {
     public void onTick(MinecraftClient mc) {
         ClientPlayerEntity p = mc.player;
         if (p == null || p.hasVehicle() || p.isSpectator()) return;
+        if (CameraRig.mode() == CameraRig.Mode.FREE) return;   // the body stays put during Freecam
 
         var o = mc.options;
         double s = speed.getNum();
