@@ -81,13 +81,21 @@ public final class EspModule extends Module {
             int y1 = (int) top[1];
 
             if (boxes.getBool()) {
-                ctx.drawBorder(x1, y1, (int) boxW, (int) boxH, color);
+                outline(ctx, x1, y1, (int) boxW, (int) boxH, color);
             }
             if (names.getBool()) {
                 String label = p.getName().getString() + " [" + Math.round(dist) + "m]";
                 ctx.drawCenteredTextWithShadow(mc.textRenderer, label, (int) top[0], y1 - 10, color);
             }
         }
+    }
+
+    /** 1px rectangle outline built from fills (DrawContext.drawBorder was renamed in 1.21.x). */
+    private static void outline(DrawContext ctx, int x, int y, int w, int h, int color) {
+        ctx.fill(x, y, x + w, y + 1, color);             // top
+        ctx.fill(x, y + h - 1, x + w, y + h, color);     // bottom
+        ctx.fill(x, y + 1, x + 1, y + h - 1, color);     // left
+        ctx.fill(x + w - 1, y + 1, x + w, y + h - 1, color); // right
     }
 
     /** World offset (relative to camera) -> screen x,y. Returns null if behind camera. */
