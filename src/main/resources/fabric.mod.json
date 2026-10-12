@@ -3,13 +3,12 @@
   "id": "wellfeed",
   "version": "${version}",
   "name": "Wellfeed",
-  "description": "A click-GUI utility menu with keybinds, per-module settings and automation helpers (AutoMine, AutoBuild, AutoFarm, AutoFish, AutoEat, AutoTool).",
-  "authors": ["Wellfeed contributors"],
+  "description": "Click-GUI utility mod: Fly, AutoMiner (two-corner region), Fullbright, AutoSprint.",
+  "authors": ["You"],
   "license": "MIT",
-  "icon": "assets/wellfeed/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": ["com.wellfeed.WellfeedClient"]
+    "client": ["net.wellfeed.WellfeedClient"]
   },
   "depends": {
     "fabricloader": ">=0.18.0",
