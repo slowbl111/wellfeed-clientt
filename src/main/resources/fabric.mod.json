@@ -3,15 +3,16 @@
   "id": "wellfeed",
   "version": "${version}",
   "name": "Wellfeed",
-  "description": "Click-GUI utility mod: Fly, AutoMiner (two-corner region), Fullbright, AutoSprint.",
-  "authors": ["You"],
+  "description": "Wellfeed client: click GUI, ESP, Fly, Fullbright, creamy Keystrokes, Armor HUD, Potion HUD and AutoTotem.",
+  "authors": ["Wellfeed"],
   "license": "MIT",
   "environment": "client",
   "entrypoints": {
-    "client": ["net.wellfeed.WellfeedClient"]
+    "client": ["dev.wellfeed.WellfeedClient"]
   },
+  "mixins": ["wellfeed.mixins.json"],
   "depends": {
-    "fabricloader": ">=0.18.0",
+    "fabricloader": ">=0.19.0",
     "minecraft": "~1.21.11",
     "java": ">=21",
     "fabric-api": "*"
