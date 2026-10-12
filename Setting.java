@@ -31,18 +31,6 @@ public final class Setting {
     public boolean getBool() { return bool; }
     public double getNum() { return num; }
     public double step() { return step; }
-    public double min() { return min; }
-    public double max() { return max; }
-
-    /** 0..1 position of the current value, for sliders. */
-    public double fraction() { return max > min ? (num - min) / (max - min) : 0; }
-
-    /** Set from a 0..1 slider position, snapped to the step. */
-    public void setFraction(double f) {
-        double v = min + Math.max(0, Math.min(1, f)) * (max - min);
-        v = Math.round(v / step) * step;
-        num = Math.max(min, Math.min(max, v));
-    }
 
     public void toggle() { bool = !bool; }
 
