@@ -1,8 +1,9 @@
 {
   "key.category.wellfeed.main": "Wellfeed",
-  "key.wellfeed.gui": "Open Click GUI",
+  "key.wellfeed.gui": "Open Menu",
   "key.wellfeed.esp": "Toggle ESP",
-  "key.wellfeed.fly": "Toggle Fly",
+  "key.wellfeed.freecam": "Toggle Freecam",
   "key.wellfeed.fullbright": "Toggle Fullbright",
-  "key.wellfeed.autototem": "Toggle AutoTotem"
+  "key.wellfeed.zoom": "Zoom (hold)",
+  "key.wellfeed.fly": "Toggle Fly"
 }

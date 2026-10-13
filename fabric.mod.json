@@ -3,7 +3,7 @@
   "id": "wellfeed",
   "version": "${version}",
   "name": "Wellfeed",
-  "description": "Wellfeed client: click GUI, ESP, Fly, Fullbright, creamy Keystrokes, Armor HUD, Potion HUD and AutoTotem.",
+  "description": "Wellfeed v4: click GUI, Freecam, smooth 3D ESP, Fly, Zoom, Keystrokes, keybind list, Armor HUD, Potion HUD and Info HUD.",
   "authors": ["Wellfeed"],
   "license": "MIT",
   "environment": "client",

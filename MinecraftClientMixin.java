@@ -1,6 +1,7 @@
 package dev.wellfeed.mixin;
 
 import dev.wellfeed.modules.EspModule;
+import dev.wellfeed.modules.FreecamModule;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,9 +19,9 @@ public abstract class MinecraftClientMixin {
 
     @Inject(method = "hasOutline", at = @At("HEAD"), cancellable = true)
     private void wellfeed$espGlow(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (EspModule.INSTANCE.glowActive()
-                && entity instanceof PlayerEntity
-                && entity != ((MinecraftClient) (Object) this).player) {
+        if (!EspModule.INSTANCE.glowActive() || !(entity instanceof PlayerEntity)) return;
+        boolean self = entity == ((MinecraftClient) (Object) this).player;
+        if (!self || FreecamModule.INSTANCE.active()) {
             cir.setReturnValue(true);
         }
     }
